@@ -20,6 +20,7 @@ namespace ProactiveBot.Controllers
     {
         private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly string _appId;
+        
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
 
         public NotifyController(IBotFrameworkHttpAdapter adapter, IConfiguration configuration, ConcurrentDictionary<string, ConversationReference> conversationReferences)
@@ -49,7 +50,7 @@ namespace ProactiveBot.Controllers
         {
             // If you encounter permission-related errors when sending this message, see
             // https://aka.ms/BotTrustServiceUrl
-            await turnContext.SendActivityAsync("Heres a message");
+            await turnContext.SendActivityAsync("Heres a second message");
         }
     }
 }
