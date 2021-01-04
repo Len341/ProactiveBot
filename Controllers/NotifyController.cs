@@ -50,7 +50,14 @@ namespace ProactiveBot.Controllers
         {
             // If you encounter permission-related errors when sending this message, see
             // https://aka.ms/BotTrustServiceUrl
-            await turnContext.SendActivityAsync("Heres a second message");
+            if (Request.Query["message"].ToString() != string.Empty)
+            {
+                await turnContext.SendActivityAsync(Request.Query["message"]);
+            }
+            else
+            {
+                await turnContext.SendActivityAsync("No message provided");
+            }
         }
     }
 }
