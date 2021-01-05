@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace ProactiveBot.Controllers
         private readonly string _appId;
         
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+
 
         public NotifyController(IBotFrameworkHttpAdapter adapter, IConfiguration configuration, ConcurrentDictionary<string, ConversationReference> conversationReferences)
         {

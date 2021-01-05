@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -26,7 +28,12 @@ namespace Microsoft.BotBuilderSamples
         private void AddConversationReference(Activity activity)
         {
             var conversationReference = activity.GetConversationReference();
+            
             _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
+            var serializedResult = JsonSerializer.Serialize(_conversationReferences);
+
+            var deserializedresult = JsonSerializer
+                .Deserialize<ConcurrentDictionary<string, ConversationReference>>(serializedResult);
         }
 
         protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
