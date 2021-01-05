@@ -18,7 +18,7 @@ namespace Microsoft.BotBuilderSamples
         private const string WelcomeMessage = "Welcome to the Proactive Bot sample.  Navigate to http://localhost:3978/api/notify to proactively message everyone who has previously messaged this bot.";
 
         // Dependency injected dictionary for storing ConversationReference objects used in NotifyController to proactively message users
-        private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        public readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
 
         public ProactiveBot(ConcurrentDictionary<string, ConversationReference> conversationReferences)
         {

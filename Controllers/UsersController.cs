@@ -22,7 +22,7 @@ namespace ProactiveBot.Controllers
             content.Append("<html><body>");
             foreach (var conversationReference in _conversationReferences)
             {
-                content.Append("<h1>" + conversationReference.Value.User.Name + "</h1>");
+                content.Append("<h1>" + conversationReference.Value.User.Id + "</h1>");
             }
             if(_conversationReferences.Count == 0)
             {
