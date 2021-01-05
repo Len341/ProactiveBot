@@ -3,6 +3,7 @@ using Microsoft.Bot.Schema;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ProactiveBot.Controllers
@@ -22,7 +23,7 @@ namespace ProactiveBot.Controllers
             content.Append("<html><body>");
             foreach (var conversationReference in _conversationReferences)
             {
-                content.Append("<h1>" + conversationReference.Value.User.Id + "</h1>");
+                content.Append("<h1>" + JsonSerializer.Serialize(conversationReference) + "</h1>");
             }
             if(_conversationReferences.Count == 0)
             {
