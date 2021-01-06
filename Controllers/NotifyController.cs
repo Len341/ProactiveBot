@@ -49,7 +49,7 @@ namespace ProactiveBot.Controllers
                 {
                     return new ContentResult()
                     {
-                        Content = "{ 'body': 'No user specified to send message to.'}",
+                        Content = "{ \"body\": \"No user specified to send message to.\"}",
                         ContentType = "application/json",
                         StatusCode = (int)HttpStatusCode.OK
                     };
@@ -60,7 +60,7 @@ namespace ProactiveBot.Controllers
             {
                 return new ContentResult()
                 {
-                    Content = "{ 'body': 'No conversations found to send message to.'}",
+                    Content = "{ \"body\": \"No conversations found to send message to.\"}",
                     ContentType = "application/json",
                     StatusCode = (int) HttpStatusCode.OK
                 };
@@ -68,7 +68,7 @@ namespace ProactiveBot.Controllers
             // Let the caller know proactive messages have been sent
             return new ContentResult()
             {
-                Content = "{ 'body': 'Message has been sent.'}",
+                Content = "{ \"body\": \"Message has been sent.\"}",
                 ContentType = "application/json",
                 StatusCode = (int)HttpStatusCode.OK,
             };
