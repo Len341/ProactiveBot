@@ -5,6 +5,7 @@ using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -24,15 +25,27 @@ namespace ProactiveBot.Controllers
         }
 
 
-            public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get() 
         {
+            List<User> users = new List<User>();
+
+            foreach(var reference in _conversationReferences)
+            {
+                users.Add(new User() { Name = reference.Value.User.Name, ID = reference.Value.User.Id });
+            }
             // Let the caller know proactive messages have been sent
             return new ContentResult()
             {
-                Content = JsonSerializer.Serialize(_conversationReferences),
+                Content = JsonSerializer.Serialize(users),
                 ContentType = "application/json",
                 StatusCode = (int)HttpStatusCode.OK,
             };
         }
+    }
+
+    public class User
+    {
+        public string Name { get; set; }
+        public string ID { get; set; }
     }
 }

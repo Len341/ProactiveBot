@@ -30,10 +30,6 @@ namespace Microsoft.BotBuilderSamples
             var conversationReference = activity.GetConversationReference();
             
             _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
-            var serializedResult = JsonSerializer.Serialize(_conversationReferences);
-
-            var deserializedresult = JsonSerializer
-                .Deserialize<ConcurrentDictionary<string, ConversationReference>>(serializedResult);
         }
 
         protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
