@@ -36,23 +36,40 @@ namespace ProactiveBot.Controllers
         {
             foreach (var conversationReference in _conversationReferences.Values)
             {
-                await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
+                if (Request.Query["userid"].ToString().Length > 0)
+                {
+                    if (Request.Query["userid"].ToString() == conversationReference.User.Id)
+                    {
+                        await ((BotAdapter)_adapter)
+                            .ContinueConversationAsync(_appId, conversationReference,
+                            BotCallback, default(CancellationToken));
+                    }
+                }
+                else
+                {
+                    return new ContentResult()
+                    {
+                        Content = "{ 'body': 'No user specified to send message to.'}",
+                        ContentType = "application/json",
+                        StatusCode = (int)HttpStatusCode.OK
+                    };
+                }
             }
             
             if(_conversationReferences.Values.Count == 0)
             {
                 return new ContentResult()
                 {
-                    Content = "<html><body><h1>No conversations found to send message to.</h1></body></html>",
-                    ContentType = "text/html",
+                    Content = "{ 'body': 'No conversations found to send message to.'}",
+                    ContentType = "application/json",
                     StatusCode = (int) HttpStatusCode.OK
                 };
             }
             // Let the caller know proactive messages have been sent
             return new ContentResult()
             {
-                Content = "<html><body><h1>Proactive messages have been sent.</h1></body></html>",
-                ContentType = "text/html",
+                Content = "{ 'body': 'Message has been sent.'}",
+                ContentType = "application/json",
                 StatusCode = (int)HttpStatusCode.OK,
             };
         }
