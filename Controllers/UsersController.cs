@@ -35,7 +35,7 @@ namespace ProactiveBot.Controllers
                 {
                     Name = reference.Value.User.Name,
                     ID = reference.Value.User.Id,
-                    Email = reference.Value.User.Properties.Value<string>("email")
+                    Email = reference.Value.User.Properties.Value<string>("Email")
                 });
             }
             return new ContentResult()
