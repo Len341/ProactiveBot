@@ -9,13 +9,15 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Bot.Builder.Teams;
+using Microsoft.Bot.Schema.Teams;
 
 namespace Microsoft.BotBuilderSamples
 {
     public class ProactiveBot : ActivityHandler
     {
         // Message to send to users when the bot receives a Conversation Update event
-        private const string WelcomeMessage = "Welcome to your Proactive Bot.  Navigate to http://teamsnotif.azurewebsites.net/api/notify to message everyone who has previously messaged this bot.";
+        private const string WelcomeMessage = "Welcome to your Notification Bot";
 
         // Dependency injected dictionary for storing ConversationReference objects used in NotifyController to proactively message users
         public readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
@@ -25,18 +27,20 @@ namespace Microsoft.BotBuilderSamples
             _conversationReferences = conversationReferences;
         }
 
-        private void AddConversationReference(Activity activity)
+        private void AddConversationReference(Activity activity, string email)
         {
             var conversationReference = activity.GetConversationReference();
-            
+            conversationReference.User.Properties.Add("Email", email);
             _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
         }
 
-        protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            AddConversationReference(turnContext.Activity as Activity);
+            TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
+            string email = member.Email;
+            AddConversationReference(turnContext.Activity as Activity, email);
 
-            return base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
+            await base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
@@ -53,8 +57,10 @@ namespace Microsoft.BotBuilderSamples
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            AddConversationReference(turnContext.Activity as Activity);
+            TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
+            string email = member.Email;
 
+            AddConversationReference(turnContext.Activity as Activity, email);
             // Echo back what the user said
             await turnContext.SendActivityAsync(MessageFactory.Text($"You sent '{turnContext.Activity.Text}'"), cancellationToken);
         }

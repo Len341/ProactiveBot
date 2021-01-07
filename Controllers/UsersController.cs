@@ -31,9 +31,13 @@ namespace ProactiveBot.Controllers
 
             foreach(var reference in _conversationReferences)
             {
-                users.Add(new User() { Name = reference.Value.User.Name, ID = reference.Value.User.Id });
+                users.Add(new User()
+                {
+                    Name = reference.Value.User.Name,
+                    ID = reference.Value.User.Id,
+                    Email = reference.Value.User.Properties.Value<string>("email")
+                });
             }
-            // Let the caller know proactive messages have been sent
             return new ContentResult()
             {
                 Content = JsonSerializer.Serialize(users),
@@ -47,5 +51,6 @@ namespace ProactiveBot.Controllers
     {
         public string Name { get; set; }
         public string ID { get; set; }
+        public string Email { get; set; }
     }
 }
