@@ -30,30 +30,20 @@ namespace Microsoft.BotBuilderSamples
 
         private void AddConversationReference(Activity activity, string email)
         {
-            try
-            {
-                var conversationReference = activity.GetConversationReference();
-                conversationReference.User.Properties.Add("Email", email);
-                _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var conversationReference = activity.GetConversationReference();
+            conversationReference.User.Properties.Add("Email", email);
+            _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
         }
 
         protected override async Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (!turnContext.Activity.ServiceUrl.ToLower().Contains("localhost"))
+            string email = "emulator@test.com";
+            if (! turnContext.Activity.ServiceUrl.ToLower().Contains("localhost"))
             {
                 TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
-                string email = member.Email;
-                AddConversationReference(turnContext.Activity as Activity, email);
+                email = member.Email;
             }
-            else
-            {
-                AddConversationReference(turnContext.Activity as Activity, "emulator@test.com");
-            }
+            AddConversationReference(turnContext.Activity as Activity, email);
             await base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
         }
 
@@ -71,16 +61,13 @@ namespace Microsoft.BotBuilderSamples
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
+            string email = "emulator@test.com";
             if (!turnContext.Activity.ServiceUrl.ToLower().Contains("localhost"))
             {
                 TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
-                string email = member.Email;
-                AddConversationReference(turnContext.Activity as Activity, email);
+                email = member.Email;
             }
-            else
-            {
-                AddConversationReference(turnContext.Activity as Activity, "emulator@test.com");
-            }
+            AddConversationReference(turnContext.Activity as Activity, email);
             // Echo back what the user said
             await turnContext.SendActivityAsync(MessageFactory.Text($"You sent '{turnContext.Activity.Text}'"), cancellationToken);
         }
