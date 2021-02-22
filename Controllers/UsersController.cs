@@ -37,6 +37,7 @@ namespace ProactiveBot.Controllers
                     ID = reference.Value.User.Id,
                     Email = reference.Value.User.Properties.Value<string>("Email")
                 });
+                //testcommit
             }
             return new ContentResult()
             {
