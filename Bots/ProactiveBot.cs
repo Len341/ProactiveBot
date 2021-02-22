@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema.Teams;
+using System;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -29,17 +30,30 @@ namespace Microsoft.BotBuilderSamples
 
         private void AddConversationReference(Activity activity, string email)
         {
-            var conversationReference = activity.GetConversationReference();
-            conversationReference.User.Properties.Add("Email", email);
-            _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
+            try
+            {
+                var conversationReference = activity.GetConversationReference();
+                conversationReference.User.Properties.Add("Email", email);
+                _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         protected override async Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
-            string email = member.Email;
-            AddConversationReference(turnContext.Activity as Activity, email);
-
+            if (!turnContext.Activity.ServiceUrl.ToLower().Contains("localhost"))
+            {
+                TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
+                string email = member.Email;
+                AddConversationReference(turnContext.Activity as Activity, email);
+            }
+            else
+            {
+                AddConversationReference(turnContext.Activity as Activity, "emulator@test.com");
+            }
             await base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
         }
 
@@ -57,10 +71,16 @@ namespace Microsoft.BotBuilderSamples
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
-            string email = member.Email;
-
-            AddConversationReference(turnContext.Activity as Activity, email);
+            if (!turnContext.Activity.ServiceUrl.ToLower().Contains("localhost"))
+            {
+                TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
+                string email = member.Email;
+                AddConversationReference(turnContext.Activity as Activity, email);
+            }
+            else
+            {
+                AddConversationReference(turnContext.Activity as Activity, "emulator@test.com");
+            }
             // Echo back what the user said
             await turnContext.SendActivityAsync(MessageFactory.Text($"You sent '{turnContext.Activity.Text}'"), cancellationToken);
         }
