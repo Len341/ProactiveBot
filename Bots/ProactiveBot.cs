@@ -44,7 +44,7 @@ namespace Microsoft.BotBuilderSamples
             {
                 TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
                 email = member.Email;
-                orgId = member.AadObjectId;
+                orgId = member.TenantId;
             }
             AddConversationReference(turnContext.Activity as Activity, email, orgId);
             await base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
@@ -69,7 +69,7 @@ namespace Microsoft.BotBuilderSamples
             if (!turnContext.Activity.ServiceUrl.ToLower().Contains("localhost"))
             {
                 TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
-                orgId = member.AadObjectId;
+                orgId = member.TenantId;
                 email = member.Email;
             }
             AddConversationReference(turnContext.Activity as Activity, email, orgId);
