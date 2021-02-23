@@ -35,7 +35,8 @@ namespace ProactiveBot.Controllers
                 {
                     Name = reference.Value.User.Name,
                     ID = reference.Value.User.Id,
-                    Email = reference.Value.User.Properties.Value<string>("Email")
+                    Email = reference.Value.User.Properties.Value<string>("Email"),
+                    OrgID = reference.Value.User.Properties.Value<string>("OrgID")
                 });
                 //testcommit
             }
@@ -53,5 +54,6 @@ namespace ProactiveBot.Controllers
         public string Name { get; set; }
         public string ID { get; set; }
         public string Email { get; set; }
+        public string OrgID { get; set; }
     }
 }

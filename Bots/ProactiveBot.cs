@@ -28,22 +28,25 @@ namespace Microsoft.BotBuilderSamples
             _conversationReferences = conversationReferences;
         }
 
-        private void AddConversationReference(Activity activity, string email)
+        private void AddConversationReference(Activity activity, string email, string orgId)
         {
             var conversationReference = activity.GetConversationReference();
             conversationReference.User.Properties.Add("Email", email);
+            conversationReference.User.Properties.Add("OrgID", orgId);
             _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
         }
 
         protected override async Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             string email = "emulator@test.com";
+            string orgId = null;
             if (! turnContext.Activity.ServiceUrl.ToLower().Contains("localhost"))
             {
                 TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
                 email = member.Email;
+                orgId = member.AadObjectId;
             }
-            AddConversationReference(turnContext.Activity as Activity, email);
+            AddConversationReference(turnContext.Activity as Activity, email, orgId);
             await base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
         }
 
@@ -62,12 +65,14 @@ namespace Microsoft.BotBuilderSamples
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             string email = "emulator@test.com";
+            string orgId = null;
             if (!turnContext.Activity.ServiceUrl.ToLower().Contains("localhost"))
             {
                 TeamsChannelAccount member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id, cancellationToken);
+                orgId = member.AadObjectId;
                 email = member.Email;
             }
-            AddConversationReference(turnContext.Activity as Activity, email);
+            AddConversationReference(turnContext.Activity as Activity, email, orgId);
             // Echo back what the user said
             await turnContext.SendActivityAsync(MessageFactory.Text($"You sent '{turnContext.Activity.Text}'"), cancellationToken);
         }
